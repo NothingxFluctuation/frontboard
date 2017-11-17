@@ -27,9 +27,9 @@ LOGOUT_URL = reverse_lazy('logout')
 SECRET_KEY = 'fz8inmkt05$v6a=jh0d)oota_@bdojq%_fk4+tn8wr+fa(jr@$'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1','frontboard.pythonanywhere.com']
 
 
 # Application definition
