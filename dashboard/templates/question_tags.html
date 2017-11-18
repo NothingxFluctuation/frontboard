@@ -1,0 +1,4 @@
+{% for tag in top_q_tags %}
+<a href="{% url 'questions_by_tag' tag.slug %}"><span class="label label-default">{{tag}}</span></a>
+<br>
+{% endfor %}

@@ -27,7 +27,7 @@ LOGOUT_URL = reverse_lazy('logout')
 SECRET_KEY = 'fz8inmkt05$v6a=jh0d)oota_@bdojq%_fk4+tn8wr+fa(jr@$'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1','frontboard.pythonanywhere.com']
 
@@ -37,6 +37,7 @@ ALLOWED_HOSTS = ['127.0.0.1','frontboard.pythonanywhere.com']
 INSTALLED_APPS = (
     'dashboard',
     'taggit',
+    'crispy_forms',
 
     
     'django.contrib.admin',
@@ -48,6 +49,11 @@ INSTALLED_APPS = (
 
 
 )
+
+#crispy_forms
+CRISPY_TEMPLATE_PACK = 'bootstrap3'
+
+
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',

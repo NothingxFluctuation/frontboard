@@ -1,18 +1,27 @@
-<html>
-<head>
-<title>Log-in</title>
-</head>
-<body>
-<h1>Login</h1>
-{% if form.errors %}
-  <p> Your username and password didn't match.Please try again.</p>
-{% endif %}
-<form action="{% url 'login' %}" method="post">
-  {{ form.as_p }}
-  {% csrf_token %}
-  <input type="hidden" name="next" value="{{ next }}" />
-  <p><input type="submit" value="login"></p>
-</form>
-<p>Already have an account? <a href="{% url 'signup' %}">signup</a>.</p>
-</body>
-</html>
+{% extends "index.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+  <!--center-->
+  <div class="col-sm-6">
+    <div class="row">
+      <div class="col-xs-12">
+        <h2>Log-in</h2>
+		{% if form.errors %}
+		  <p>Your username and password didn't match. Please try again.</p>
+		{% endif %}
+        <form action="{% url 'login' %}" method="post">
+          {{ form|crispy }}
+          {% csrf_token %}
+		  <input type="hidden" name="next" value="{{ next }}" />
+          <input class="btn btn-default" type="submit" value="Log In" />
+        </form>
+		<p>Don't have an account? <a href="{% url 'signup' %}">signup</a>.</p>
+    </div>
+    </div>
+
+ 
+
+    <hr>
+  </div><!--/center-->
+{% endblock %}

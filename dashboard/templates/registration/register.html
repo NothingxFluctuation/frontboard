@@ -1,12 +1,24 @@
-<html>
-<head><title>Register</title></head>
-<body>
-<h1>Create and account</h1>
-<p>Please, sign up using the following form: </p>
-<form action="." method="post">
-  {{ user_form.as_p }}
-  {% csrf_token %}
-  <p><input type="submit" value="Create my account"></p>
-</form>
-</body>
-</html>
+{% extends "index.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+  <!--center-->
+  <div class="col-sm-6">
+    <div class="row">
+      <div class="col-xs-12">
+        <h2>Create an account</h2>
+		<p>Please register an account using the following form. If you already have an account then please <a href="{% url 'login' %}">Log In</a></p>
+        <form action="." method="post">
+          {{ user_form|crispy }}
+          {% csrf_token %}
+          <input class="btn btn-default" type="submit" value="Register my account" />
+        </form>
+    </div>
+    </div>
+
+ 
+
+    <hr>
+  </div><!--/center-->
+{% endblock %}
+

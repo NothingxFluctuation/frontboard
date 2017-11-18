@@ -27,7 +27,7 @@ urlpatterns = [
     url(r'^(?P<year>\d{4})/(?P<month>\d{2})/(?P<day>\d{2})/(?P<question>[-\w]+)/$',
         views.question_detail,
         name='question_detail'),
-    url(r'^question/(?P<year>\d{4})/(?P<month>\d{2})/(?P<day>\d{2})/(?P<story>[-\w]+)/$',
+    url(r'^story/(?P<year>\d{4})/(?P<month>\d{2})/(?P<day>\d{2})/(?P<story>[-\w]+)/$',
         views.story_detail,
         name='story_detail'),
     url(r'^users/$',views.users_board,name='users_board'),
@@ -42,7 +42,6 @@ urlpatterns = [
     url(r'^logout-then-login/$',
         'django.contrib.auth.views.logout_then_login',
         name='logout_then_login'),
-    url(r'^search/(?P<entry>[-\w]+)/$', views.search_questions, name='search_questions'),
     #change password urls
     url(r'^password_change/$',
         'django.contrib.auth.views.password_change',

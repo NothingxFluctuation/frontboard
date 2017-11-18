@@ -1,27 +1,29 @@
 {% extends "index.html" %}
-{% block content %}  
-  <!--center-->
+
+
+{% block content %}
+
   <div class="col-sm-6">
-  {% for question in results %}
+  {% for question in questions %}
     <div class="row">
       <div class="col-xs-12">
         <h4><a href="{{ question.get_absolute_url }}"> {{question.title}} </a></h4>
         <p> {{question.body|truncatewords:30|linebreaks }} </p>
         <p class="lead"><a href="{{ question.get_absolute_url }}"><button class="btn btn-default">Read More</button></a></p>
         <p class="pull-right">
-          {% for tag in question.tags.all %}
-          <a href="{% url 'questions_by_tag' tag.slug %}"><span class="label label-default">{{tag}}</span></a>
-          {% endfor %}
+        	{% for tag in question.tags.all %}
+        	<a href="{% url 'questions_by_tag' tag.slug %}"><span class="label label-default">{{tag}}</span></a>
+        	{% endfor %}
         </p>
         <ul class="list-inline"><li><a href="{{ question.get_absolute_url }}">{{question.created}}</a></li><li><a href="{{ question.get_absolute_url }}"><i class="glyphicon glyphicon-comment"></i>{{question.answers.count}} Answer{{question.answers.count|pluralize}}</a></li><li><a href=""><i class="glyphicon glyphicon-share"></i>{{question.author}}</a></li></ul>
-    <hr>
-    </div>
+		<hr>
+	  </div>
     </div>
   {% endfor %}
-
  
     <hr>
-    {% include "pagination.html" with page=results %}
+    {% include "pagination.html" with page=questions %}
     <hr>
   </div><!--/center-->
+  
 {% endblock %}

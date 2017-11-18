@@ -1,0 +1,4 @@
+{% for tag in top_s_tags %}
+<a href="{% url 'stories_by_tag' tag.slug %}"><span class="label label-default">{{tag}}</span></a>
+<br>
+{% endfor %}

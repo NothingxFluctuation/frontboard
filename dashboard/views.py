@@ -19,7 +19,6 @@ def frontboard(request, tag_slug=None):
     object_list=Question.objects.filter(created__gte=timezone.now()-timedelta(days=7))
     object_list = object_list.annotate(
         total_answers=Count('answers')).order_by('-total_answers')
-    top_tags=Question.tags.most_common()[:10]
     tag = None
     if tag_slug:
         tag = get_object_or_404(Tag, slug=tag_slug)
@@ -33,15 +32,13 @@ def frontboard(request, tag_slug=None):
     except EmptyPage:
         questions=paginator.page(paginator.num_pages)
     return render(request,
-                  'index.html',
+                  'questions.html',
                   {'page':page,
                    'questions':questions,
-                   'top_tags':top_tags,
                    'tag':tag})
     
 def questions_board(request):
     object_list=Question.objects.order_by('-created')
-    top_tags=Question.tags.most_common()[:10]
     paginator=Paginator(object_list,15)
     page=request.GET.get('page')
     try:
@@ -51,10 +48,9 @@ def questions_board(request):
     except EmptyPage:
         questions=paginator.page(paginator.num_pages)
     return render(request,
-                  'index.html',
+                  'questions.html',
                   {'page':page,
-                   'questions':questions,
-                   'top_tags':top_tags,})
+                   'questions':questions})
 
 def question_detail(request, year, month, day, question):
     question=get_object_or_404(Question,
@@ -64,7 +60,6 @@ def question_detail(request, year, month, day, question):
                                created__day=day)
     answers=question.answers.filter(active=True)
     answer_form=AnswerForm()
-    top_tags= Question.tags.most_common()[:10]
     if request.method=='POST':  #an answer is posted
         answer_form=AnswerForm(data=request.POST or None)
         if answer_form.is_valid():
@@ -83,15 +78,13 @@ def question_detail(request, year, month, day, question):
         
     return render(request,
                   'question_detail.html',
-                  {'top_tags':top_tags,
-                   'question':question,
+                  {'question':question,
                    'answers':answers,
                    'answer_form':answer_form,
                    'new_answer':new_answer})
     
 def stories_board(request, tag_slug=None):
     object_list=Story.objects.order_by('-created')
-    top_tags=Story.tags.most_common()[:10]
     tag=None
     if tag_slug:
         tag=get_object_or_404(Tag, slug=tag_slug)
@@ -108,7 +101,6 @@ def stories_board(request, tag_slug=None):
                   'stories.html',
                   {'page':page,
                    'stories':stories,
-                   'top_tags':top_tags,
                    'tag':tag})
 def story_detail(request, year, month, day, story):
     story=get_object_or_404(Story,
@@ -117,7 +109,6 @@ def story_detail(request, year, month, day, story):
                             created__month=month,
                             created__day=day)
     comments=story.comments.filter(active=True)
-    top_tags=Story.tags.most_common()[:10]
     comment_form=CommentForm()
     if request.method=='POST': #a comment is posted
         comment_form=CommentForm(data=request.POST or None)
@@ -137,7 +128,6 @@ def story_detail(request, year, month, day, story):
                   'story_detail.html',
                   {'story':story,
                    'comments':comments,
-                   'top_tags':top_tags,
                    'comment_form':comment_form,
                    'new_comment':new_comment})
 @login_required
@@ -152,15 +142,12 @@ def users_board(request):
     except EmptyPage:
         users=paginator.page(paginator.num_pages)
         
-    top_tags=Question.tags.most_common()[:10]
     return render(request,
                   'users.html',
                   {'users':users,
-                   'page':page,
-                   'top_tags':top_tags})
+                   'page':page})
 @login_required    
 def new_question(request):
-    top_tags=Question.tags.most_common()[:10]
     question_form=QuestionForm()
     if request.method=='POST':
         question_form=QuestionForm(data=request.POST or None)
@@ -178,11 +165,9 @@ def new_question(request):
         question_form=QuestionForm()
     return render(request,
                   'new_question.html',
-                  {'question_form':question_form,
-                   'top_tags':top_tags})
+                  {'question_form':question_form})
 @login_required
 def new_story(request):
-    top_tags=Story.tags.most_common()[:10]
     story_form=StoryForm()
     if request.method=='POST':
         story_form=StoryForm(data=request.POST or None)
@@ -200,8 +185,7 @@ def new_story(request):
         story_form=StoryForm()
     return render(request,
                   'new_story.html',
-                  {'story_form':story_form,
-                   'top_tags':top_tags})
+                  {'story_form':story_form})
 def user_login(request):
     form=LoginForm(request.POST)
     if request.method== 'POST':
@@ -230,8 +214,6 @@ def user_logout(request):
     logout(request)
     return redirect('/')
 def register(request):
-    if request.user.is_authenticated:
-        return redirect('/')
     user_form=SignupForm(request.POST)
     if request.method=='POST':
         user_form=SignupForm(data=request.POST or None)
@@ -240,6 +222,10 @@ def register(request):
             new_user.set_password(user_form.cleaned_data['password'])
             new_user.save()
             profile=Profile.objects.create(user=new_user)
+            shaka=authenticate(username=user_form.cleaned_data['username'],
+                               password=user_form.cleaned_data['password'],
+                               )
+            login(request, shaka)
             return redirect('/')
         else:
             user_form=SignupForm()
@@ -251,7 +237,6 @@ def register(request):
 
 @login_required
 def profile_edit(request):
-    top_tags=Question.tags.most_common()[:10]
     if request.method=='POST':
         user_form=UserEditForm(instance=request.user,
                                data=request.POST)
@@ -271,46 +256,23 @@ def profile_edit(request):
     return render(request,
                   'profile_edit.html',
                   {'user_form':user_form,
-                   'profile_form':profile_form,
-                   'top_tags':top_tags})
+                   'profile_form':profile_form})
 
 @login_required
 def profile(request):
-    top_tags=Question.tags.most_common()[:10]
     usr=request.user
     profile_usr=request.user.profile
     return render(request,
                   'profile.html',
                   {'usr':usr,
-                   'profile_usr':profile_usr,
-                   'top_tags':top_tags})
+                   'profile_usr':profile_usr})
 @login_required
 def user_profile(request, username):
-    top_tags=Question.tags.most_common()[:10]
     usr=get_object_or_404(User,
                           username=username)
     profile_usr=usr.profile
     return render(request,
                   'profile.html',
                   {'usr':usr,
-                   'profile_usr':profile_usr,
-                   'top_tags':top_tags})
+                   'profile_usr':profile_usr})
 
-def search_questions(request, entry):
-    top_tags=Question.tags.most_common()[:10]
-    questions=Question.objects.filter(Q(title__icontains=entry)\
-                                    |Q(body__icontains=entry))
-    paginator=Paginator(questions,15)
-    page=request.GET.get('page')
-    
-    try:
-        results=paginator.page(page)
-    except PageNotAnInteger:
-        results=paginator.page(1)
-    except EmptyPage:
-        results=paginator.page(paginator.num_pages)
-    return render(request,
-                  'search.html',
-                  {'results':results,
-                   'page':page,
-                   'top_tags':top_tags})

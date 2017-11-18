@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 class QuestionForm(forms.ModelForm):
     class Meta:
         model = Question
-        fields = {'title','body','tags'}
+        fields = ('title','body','tags')
 
 
 class AnswerForm(forms.ModelForm):
@@ -20,7 +20,7 @@ class AnswerForm(forms.ModelForm):
 class StoryForm(forms.ModelForm):
     class Meta:
         model = Story
-        fields = {'title','source'}
+        fields = ('title','source')
 
 class CommentForm(forms.ModelForm):
     class Meta:
@@ -45,7 +45,13 @@ class UserEditForm(forms.ModelForm):
         model=User
         fields= ('first_name','last_name','email')
 class ProfileEditForm(forms.ModelForm):
+    date_of_birth=forms.CharField(widget=forms.TextInput(attrs={'placeholder':'y-m-d'}))
     class Meta:
         model= Profile
         fields = ('date_of_birth','work_or_study')
         
+
+#search form
+class SearchForm(forms.Form):
+    search_query=forms.CharField(max_length=50)
+    
